@@ -6,6 +6,7 @@ use App\Models\comments;
 use App\Models\products;
 use App\Models\slide;
 use App\Models\slides;
+use App\Models\bill_details;
 use App\Models\type_products;
 use Illuminate\Http\Request;
 
@@ -59,5 +60,79 @@ class PageController extends Controller
 
 
  }
+ public function getIndexAdmin(){
+    $products = products::all();
+    return view('pageadmin.admin')->with([
+        'products' => $products,
+        'sumSold' => count(bill_details::all())
+    ]);
+}
+        public function getAdminAdd(){
+            return view('pageadmin.admin-add-form');
+}
+public function postAdminAdd(Request $request) {
+    $product = new products();
+
+    if ($request->hasFile('inputImage')) {
+        $file = $request->file('inputImage');
+        $fileName = $file->getClientOriginalName('inputImage');
+        $file->move('source/image/product', $fileName);
+        $product->image = $fileName;
+    }
+
+    $product->name = $request->inputName;
+    $product->description = $request->inputDescription; // Sửa đúng tên trường ở đây
+    $product->unit_price = $request->inputunitPrice;
+    $product->promotion_price = $request->inputPromotionPrice;
+    $product->unit = $request->inputunit;
+    $product->new = $request->inputNew;
+    $product->id_type = $request->inputType;
+
+    $product->save();
+
+    return $this->getIndexAdmin();
+}
+
+
+public function getAdminEdit($id)	{
+    $product =products::find($id);
+    return view('pageadmin.admin-edit-form')->with('product',$product);
+}
+
+public function postAdminEdit(Request $request)	{
+    $id =$request ->editId;
+    $product =products::find($id);
+    if ($request->hasFile('editImage')) {
+        $file = $request->file('editImage');
+        $fileName = $file->getClientOriginalName('editImage');
+        $file->move('source/image/product', $fileName);
+        $product->image = $fileName;
+    }
+
+    $product->name = $request->editName;
+    $product->description = $request->editDescription;
+    $product->unit_price = $request->editunitPrice;
+    $product->promotion_price = $request->editPromotionPrice;
+    $product->unit = $request->inputeditunit;
+    $product->new = $request->editNew;
+    $product->id_type = $request->editType;
+
+    $product->save();
+
+    return $this->getIndexAdmin();
+}
+
+// public function postAdminDelete($id){
+//     $product = products::find($id);
+//     $product->detele();
+//     return $this->getIndexAdmin();
+// }
+public function  postAdminDelete($id)
+{
+    $product = products::find($id);
+    $product->delete();
+    return $this->getIndexAdmin();
+}
+
 
 }
