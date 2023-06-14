@@ -89,7 +89,16 @@ Route::get('/luan8',[PageController::class,'about']);
 
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
+Route::get('/register', function () {
+    return view('users.register');
+});
+Route::post('/register',[UserController::class,'Register']);
 
+Route::get('/login', function () {
+    return view('users.login');
+   });
+Route::post('/login',[UserController::class,'Login']);
+Route::get('/logout',[UserController::class,'Logout']);
 
 
 
